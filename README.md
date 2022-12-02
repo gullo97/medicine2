@@ -1,4 +1,4 @@
-In this notebook we will preprocess the data and create a dataframe that we can use for further studies.  
+In this notebook we start by preprocess the data and create a dataframe that we can use for further studies.  
 We start by importing the necessary libraries.
 
 
@@ -299,7 +299,7 @@ plt.show()
 
 
     
-![png](data_preprocess_files/data_preprocess_7_0.png)
+![png](notebook_files/notebook_7_0.png)
     
 
 
@@ -649,25 +649,205 @@ data
 
 
 
-And we plot the correlation matrix again. We notice the correlation between 'Sesso' and the last columns has of course switched sign.
+Here we can choose 2 columns and plot them against each other.
 
 
 ```python
-# plot correlation matrix
-corr = data.corr()
-plt.figure(figsize=(20,20))
-sns.heatmap(corr, annot=True, fmt=".2f", center=0, cmap='PiYG')
-plt.show()
+def plot_correlation(column_1, column_2):
+    plt.figure(figsize=(8,8))
+    sns.scatterplot(x=column_1, y=column_2, data=data)
+    # plot line of best fit
+    sns.regplot(x=column_1, y=column_2, data=data, scatter=False, color='red')    
+    plt.show()
+    
 
+# plot_correlation(data[data.columns[-4]], data['OS (mesi)'])
+plot_correlation(data['EORtot'], data['OS (mesi)'])
 ```
 
 
     
-![png](data_preprocess_files/data_preprocess_13_0.png)
+![png](notebook_files/notebook_13_0.png)
     
 
 
+Let's use dimensionality reduction to see if we can find some interesting patterns in the data. This condenses the numerical information of each patient into 2 dimensions so that we can plot it.
+We use the first 10 columns as input and the last 2 as color. Thus green means longer than average and red means shorter than average survival time.
+
 
 ```python
+# UMAP on data
+import umap
+reducer = umap.UMAP()
+embedding = reducer.fit_transform(data.iloc[:, :-2])
+```
 
+
+```python
+# plot embedding
+plt.figure(figsize=(16,8))
+plt.subplot(1,2,1)
+plt.scatter(embedding[:, 0], embedding[:, 1], c=data.iloc[:, -2], cmap='PiYG', label=data.columns[-2])
+plt.legend()
+plt.colorbar()
+plt.subplot(1,2,2)
+plt.scatter(embedding[:, 0], embedding[:, 1], c=data.iloc[:, -1], cmap='PiYG', label=data.columns[-1])
+plt.colorbar()
+plt.legend()
+plt.show()
+```
+
+
+    
+![png](notebook_files/notebook_16_0.png)
+    
+
+
+One can easily see a color gradient: this means that the patients are in principle separable from the data available. Moreover, new patients can be located in this 2D space to predict the survival time.
+
+Let's now create a neural network model to try and fit the data.
+
+
+```python
+import torch
+import torch.nn as nn
+
+L_SIZE = 5
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self.fc1 = nn.Linear(10, L_SIZE)
+        self.fc2 = nn.Linear(L_SIZE, L_SIZE)
+        self.fc3 = nn.Linear(L_SIZE, L_SIZE)
+        self.fc4 = nn.Linear(L_SIZE, L_SIZE)
+        self.fc5 = nn.Linear(L_SIZE, L_SIZE)
+        self.fc6 = nn.Linear(L_SIZE, L_SIZE)
+        self.fc7 = nn.Linear(L_SIZE, 1)
+        self.relu = nn.ReLU()
+        # self.sigmoid = nn.Sigmoid()
+        self.to(self.device)
+        
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        x = self.relu(x)
+        # x = self.fc3(x)
+        # x = self.relu(x)
+        # x = self.fc4(x)
+        # x = self.relu(x)
+        # x = self.fc5(x)
+        # x = self.relu(x)
+        # x = self.fc6(x)
+        # x = self.relu(x)
+        x = self.fc7(x)
+        # x = self.sigmoid(x)
+        
+        return x
+    def train_model(self, train_loader, test_loader, epochs=100, lr=0.001, PLOT_INTERVAL=150):
+        criterion = nn.MSELoss()
+        optimizer = torch.optim.Adam(self.parameters(), lr=lr)
+        train_losses = []
+        test_losses = []
+        for epoch in range(epochs):
+            for i, (inputs, labels) in enumerate(train_loader):
+                inputs = inputs.to(self.device)
+                labels = labels.to(self.device)
+                optimizer.zero_grad()
+                outputs = self(inputs).view(-1,1)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                train_losses.append(loss.item())
+                optimizer.step()
+            with torch.no_grad():
+                for j, (inputs, labels) in enumerate(test_loader):
+                    inputs = inputs.to(self.device)
+                    labels = labels.to(self.device)
+                    outputs = self(inputs).view(-1,1)
+                    test_loss = criterion(outputs, labels)
+                    test_losses.append(test_loss.item())
+            if((epoch % PLOT_INTERVAL == 0 and epoch!=0) or epoch == epochs-1):
+                print('Epoch: {}, Train Loss: {:.4f}'.format(epoch, loss.item()))
+                print('Epoch: {}, Test Loss: {:.4f}'.format(epoch, test_loss.item()))
+                plt.figure(figsize=(8,8))
+                plt.plot(train_losses)
+                plt.plot(test_losses)
+                plt.legend(['train loss', 'test loss'])
+                plt.show()
+        print('Finished Training')
+```
+
+The model need a dataset class to work with.
+
+
+```python
+class CustomDataset(torch.utils.data.Dataset):
+    def __init__(self, data):
+        self.data = data
+        
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        return torch.Tensor([self.data.iloc[idx, :-2]]), torch.Tensor([self.data.iloc[idx, -1]])
+    def train_test_split(self, test_size=0.2):
+        train_data = self.data.sample(frac=1-test_size, random_state=0)
+        test_data = self.data.drop(train_data.index)
+        return train_data, test_data
+```
+
+Now we split data into training and test sets.
+
+
+```python
+# torch.Tensor([data.iloc[1, :-1].values]).to('cuda:0')
+dataset = CustomDataset(data)
+train_data, test_data = dataset.train_test_split()
+train_dataset = CustomDataset(train_data)
+test_dataset = CustomDataset(test_data)
+```
+
+And we define the Dataloaders.
+
+
+```python
+# import dataloader
+from torch.utils.data import DataLoader
+train_loader = DataLoader(train_dataset, batch_size=150, shuffle=False)
+test_loader = DataLoader(test_dataset, batch_size=150, shuffle=False)
+
+```
+
+We are now ready to train the model.
+
+
+```python
+model = Net()
+model.train_model(train_loader, test_loader, epochs=600, lr=0.001, PLOT_INTERVAL=2000)
+
+#save model state_dict
+# torch.save(model.state_dict(), 'model.pth')
+```
+
+    Epoch: 599, Train Loss: 0.2685
+    Epoch: 599, Test Loss: 0.9058
+    
+
+
+    
+![png](notebook_files/notebook_26_1.png)
+    
+
+
+    Finished Training
+    
+
+Let's try a clustering algorithm. (To do...)
+
+
+```python
+# kmeans clustering
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=3, random_state=0).fit(data.iloc[:, :-1])
 ```
