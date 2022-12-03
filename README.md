@@ -705,6 +705,85 @@ plt.show()
 
 One can easily see a color gradient: this means that the patients are in principle separable from the data available. Moreover, new patients can be located in this 2D space to predict the survival time.
 
+But we are not done yet. We can also invert the process and identify the most important features that determine the survival time. This is done by using the built in inverse trasform of UMAP.
+
+
+```python
+labels = data.iloc[:, -2]
+mapper = umap.UMAP(random_state=42).fit(data.iloc[:, :-2])
+
+# mapper.embedding_
+plt.scatter(mapper.embedding_[:, 0], mapper.embedding_[:, 1], c=labels, cmap='PiYG')
+```
+
+
+
+
+    <matplotlib.collections.PathCollection at 0x2d329ed2a88>
+
+
+
+
+    
+![png](notebook_files/notebook_18_1.png)
+    
+
+
+
+```python
+corners = np.array([
+    [2.2, 8.9],  
+    [6.5, 10.5], 
+    [4.2, 14.5],  
+    [6.8, 14.2],  
+])
+
+test_pts = np.array([
+    (corners[0]*(1-x) + corners[1]*x)*(1-y) +
+    (corners[2]*(1-x) + corners[3]*x)*y
+    for y in np.linspace(0, 1, 5)
+    for x in np.linspace(0, 1, 5)
+])
+```
+
+
+```python
+inv_transformed_points = mapper.inverse_transform(test_pts)
+```
+
+
+```python
+from matplotlib.gridspec import GridSpec
+# Set up the grid
+fig = plt.figure(figsize=(12,6))
+gs = GridSpec(5, 10, fig)
+scatter_ax = fig.add_subplot(gs[:, :5])
+digit_axes = np.zeros((5, 5), dtype=object)
+for i in range(5):
+    for j in range(5):
+        digit_axes[i, j] = fig.add_subplot(gs[i, 5 + j])
+
+# Use umap.plot to plot to the major axis
+# umap.plot.points(mapper, labels=labels, ax=scatter_ax)
+scatter_ax.scatter(mapper.embedding_[:, 0], mapper.embedding_[:, 1], c=labels, cmap='PiYG', s=16)
+scatter_ax.set(xticks=[], yticks=[])
+
+# Plot the locations of the text points
+scatter_ax.scatter(test_pts[:, 0], test_pts[:, 1], marker='x', c='k', s=20)
+
+# Plot each of the generated digit images
+for i in range(5):
+    for j in range(5):
+        digit_axes[i, j].bar(range(len(inv_transformed_points[i*5 + j])), inv_transformed_points[i*5 + j])
+        digit_axes[i, j].set(xticks=[], yticks=[])
+```
+
+
+    
+![png](notebook_files/notebook_21_0.png)
+    
+
+
 Let's now create a neural network model to try and fit the data.
 
 
@@ -830,13 +909,13 @@ model.train_model(train_loader, test_loader, epochs=600, lr=0.001, PLOT_INTERVAL
 # torch.save(model.state_dict(), 'model.pth')
 ```
 
-    Epoch: 599, Train Loss: 0.2685
-    Epoch: 599, Test Loss: 0.9058
+    Epoch: 599, Train Loss: 0.2578
+    Epoch: 599, Test Loss: 0.9321
     
 
 
     
-![png](notebook_files/notebook_26_1.png)
+![png](notebook_files/notebook_31_1.png)
     
 
 
