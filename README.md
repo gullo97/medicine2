@@ -678,7 +678,7 @@ We use the first 10 columns as input and the last 2 as color. Thus green means l
 ```python
 # UMAP on data
 import umap
-reducer = umap.UMAP()
+reducer = umap.UMAP(random_state=42)
 embedding = reducer.fit_transform(data.iloc[:, :-2])
 ```
 
@@ -709,6 +709,14 @@ But we are not done yet. We can also invert the process and identify the most im
 
 
 ```python
+# #save dataframe 
+# data.to_csv('data_norm.csv', index=False)
+```
+
+
+```python
+#load dataframe
+data = pd.read_csv('data_norm.csv')
 labels = data.iloc[:, -2]
 mapper = umap.UMAP(random_state=42).fit(data.iloc[:, :-2])
 
@@ -719,20 +727,20 @@ plt.scatter(mapper.embedding_[:, 0], mapper.embedding_[:, 1], c=labels, cmap='Pi
 
 
 
-    <matplotlib.collections.PathCollection at 0x2d329ed2a88>
+    <matplotlib.collections.PathCollection at 0x1b41868fd48>
 
 
 
 
     
-![png](notebook_files/notebook_18_1.png)
+![png](notebook_files/notebook_19_1.png)
     
 
 
 
 ```python
 corners = np.array([
-    [2.2, 8.9],  
+    [2.1, 8.7],  
     [6.5, 10.5], 
     [4.2, 14.5],  
     [6.8, 14.2],  
@@ -769,7 +777,7 @@ scatter_ax.scatter(mapper.embedding_[:, 0], mapper.embedding_[:, 1], c=labels, c
 scatter_ax.set(xticks=[], yticks=[])
 
 # Plot the locations of the text points
-scatter_ax.scatter(test_pts[:, 0], test_pts[:, 1], marker='x', c='k', s=20)
+scatter_ax.scatter(test_pts[:, 0], test_pts[:, 1], marker='x', c='k', s=25)
 
 # Plot each of the generated digit images
 for i in range(5):
@@ -780,9 +788,11 @@ for i in range(5):
 
 
     
-![png](notebook_files/notebook_21_0.png)
+![png](notebook_files/notebook_22_0.png)
     
 
+
+To play around with this, you can use the app.py file in this repository. It is a simple streamlit app that allows to click on this 2D space and get the original features of the patient.
 
 Let's now create a neural network model to try and fit the data.
 
@@ -909,13 +919,13 @@ model.train_model(train_loader, test_loader, epochs=600, lr=0.001, PLOT_INTERVAL
 # torch.save(model.state_dict(), 'model.pth')
 ```
 
-    Epoch: 599, Train Loss: 0.2578
-    Epoch: 599, Test Loss: 0.9321
+    Epoch: 599, Train Loss: 0.2640
+    Epoch: 599, Test Loss: 1.0197
     
 
 
     
-![png](notebook_files/notebook_31_1.png)
+![png](notebook_files/notebook_33_1.png)
     
 
 
