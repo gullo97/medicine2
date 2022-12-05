@@ -8,7 +8,9 @@ import numpy as np
 #%%
 st.title("Data Exploration")
 st.write('Each point on the graph represents a single patient. The color of the point represents the patient\'s survival time. Click on a point to calculate the patiet\'s data.')
-# get mean and std from the data
+
+################################################################################
+# get mean and std from the data to reverse the normalization if needed
 data = pd.read_excel("data.xls")
 #drop unnamed columns
 data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
@@ -16,10 +18,8 @@ data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
 data = data.iloc[:, :-2]
 means = {col: data[col].mean() for col in data.columns}
 stds = {col: data[col].std() for col in data.columns}
+################################################################################
 
-# means['Sesso','MGMTmet','IDH1'] = 0
-# stds['Sesso','MGMTmet','IDH1'] = 1
-# st.write(means)
 #%%
 # st.write("Hello World!")
 #%% read csv
@@ -32,6 +32,7 @@ mapper = umap.UMAP(random_state=42).fit(data_norm.iloc[:, :-2])
 #%%
 fig = px.scatter(mapper.embedding_, x=0, y=1, color=labels, color_continuous_scale=px.colors.diverging.PiYG, color_continuous_midpoint=np.mean(labels))
 selected_points = plotly_events(fig)
+
 # get x and y coordinates of selected points
 x = [point['x'] for point in selected_points]
 y = [point['y'] for point in selected_points]
