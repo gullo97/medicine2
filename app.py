@@ -36,14 +36,17 @@ selected_points = plotly_events(fig)
 # get x and y coordinates of selected points
 x = [point['x'] for point in selected_points]
 y = [point['y'] for point in selected_points]
-st.write('Point chosen: ',(x[0],y[0]))
-click_coord = np.array([x[0],y[0]]).reshape(1, -1)
-inverse = mapper.inverse_transform(click_coord)
 
-rev_norm = st.checkbox("Reverse Normalization", value=False)
-if rev_norm:
-    for i, col in enumerate(data.columns):
-        inverse[0][i] = inverse[0][i] * stds[col] + means[col]
-bar_fig = px.bar(x=data_norm.columns[:-2], y=inverse[0])
-st.write(bar_fig)
+try:
+    st.write('Point chosen: ',(x[0],y[0]))     
 
+    click_coord = np.array([x[0],y[0]]).reshape(1, -1)
+    inverse = mapper.inverse_transform(click_coord)
+
+    rev_norm = st.checkbox("Reverse Normalization", value=False)
+    if rev_norm:
+        for i, col in enumerate(data.columns):
+            inverse[0][i] = inverse[0][i] * stds[col] + means[col]
+    bar_fig = px.bar(x=data_norm.columns[:-2], y=inverse[0])
+    st.write(bar_fig)
+except: st.write('No point chosen')
