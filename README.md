@@ -308,7 +308,7 @@ In order to more effectively apply machine learning algorithms in the future, we
 
 ```python
 #normalize data by column
-column_excluded = ['Sesso', 'MGMTmet', 'IDH1']
+column_excluded = []#['Sesso', 'MGMTmet', 'IDH1']
 for column in data.columns:
     if column not in column_excluded:
         data[column] = (data[column] - data[column].mean()) / data[column].std()
@@ -355,9 +355,9 @@ data.head()
     <tr>
       <th>0</th>
       <td>-0.973648</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
+      <td>-0.859782</td>
+      <td>-1.051313</td>
+      <td>0.848122</td>
       <td>0.427323</td>
       <td>1.831101</td>
       <td>0.321120</td>
@@ -370,9 +370,9 @@ data.head()
     <tr>
       <th>1</th>
       <td>-0.973648</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
+      <td>-0.859782</td>
+      <td>-1.051313</td>
+      <td>0.848122</td>
       <td>0.291637</td>
       <td>1.305539</td>
       <td>0.321120</td>
@@ -385,9 +385,9 @@ data.head()
     <tr>
       <th>2</th>
       <td>-0.641156</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
+      <td>-0.859782</td>
+      <td>-1.051313</td>
+      <td>0.848122</td>
       <td>0.110722</td>
       <td>-1.406522</td>
       <td>0.321120</td>
@@ -400,9 +400,9 @@ data.head()
     <tr>
       <th>3</th>
       <td>1.187552</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
+      <td>-0.859782</td>
+      <td>0.944851</td>
+      <td>0.848122</td>
       <td>1.689613</td>
       <td>2.936386</td>
       <td>0.321120</td>
@@ -415,9 +415,9 @@ data.head()
     <tr>
       <th>4</th>
       <td>1.104429</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
+      <td>-0.859782</td>
+      <td>-1.051313</td>
+      <td>0.848122</td>
       <td>-1.270807</td>
       <td>-1.099610</td>
       <td>-1.558608</td>
@@ -429,222 +429,6 @@ data.head()
     </tr>
   </tbody>
 </table>
-</div>
-
-
-
-We also remap the values in the 'Sesso' column to 1 and 0.
-
-
-```python
-data['Sesso'] = data['Sesso'].apply(lambda x: 1 if x == 1 else 0)
-data
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Eta</th>
-      <th>Sesso</th>
-      <th>MGMTmet</th>
-      <th>IDH1</th>
-      <th>VolMdCpre</th>
-      <th>Vol FLAIR</th>
-      <th>RT</th>
-      <th>TMz cicli</th>
-      <th>EORMdC (percentuale)</th>
-      <th>EORtot</th>
-      <th>OS (mesi)</th>
-      <th>PFS (mesi)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>-0.973648</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.427323</td>
-      <td>1.831101</td>
-      <td>0.321120</td>
-      <td>-0.085274</td>
-      <td>-0.360291</td>
-      <td>-0.686745</td>
-      <td>-1.042213</td>
-      <td>-0.686944</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>-0.973648</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.291637</td>
-      <td>1.305539</td>
-      <td>0.321120</td>
-      <td>-0.085274</td>
-      <td>0.231308</td>
-      <td>0.488303</td>
-      <td>-0.312542</td>
-      <td>0.343472</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>-0.641156</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.110722</td>
-      <td>-1.406522</td>
-      <td>0.321120</td>
-      <td>-0.085274</td>
-      <td>0.231308</td>
-      <td>0.073801</td>
-      <td>-0.494960</td>
-      <td>-0.042934</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>1.187552</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1.689613</td>
-      <td>2.936386</td>
-      <td>0.321120</td>
-      <td>-0.085274</td>
-      <td>-0.300493</td>
-      <td>-0.746639</td>
-      <td>-0.859795</td>
-      <td>-0.944548</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>1.104429</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>-1.270807</td>
-      <td>-1.099610</td>
-      <td>-1.558608</td>
-      <td>-0.085274</td>
-      <td>0.231308</td>
-      <td>0.272214</td>
-      <td>0.052293</td>
-      <td>-0.171736</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>145</th>
-      <td>-1.223018</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0.225850</td>
-      <td>-1.077544</td>
-      <td>0.321120</td>
-      <td>-0.085274</td>
-      <td>0.231308</td>
-      <td>0.680710</td>
-      <td>0.325920</td>
-      <td>0.601076</td>
-    </tr>
-    <tr>
-      <th>146</th>
-      <td>-0.890525</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.970067</td>
-      <td>-0.333332</td>
-      <td>0.321120</td>
-      <td>-0.085274</td>
-      <td>0.231308</td>
-      <td>0.111218</td>
-      <td>-0.221333</td>
-      <td>0.085868</td>
-    </tr>
-    <tr>
-      <th>147</th>
-      <td>-0.308664</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>-0.604713</td>
-      <td>-1.095598</td>
-      <td>0.321120</td>
-      <td>-0.085274</td>
-      <td>0.231308</td>
-      <td>1.008170</td>
-      <td>0.873173</td>
-      <td>0.343472</td>
-    </tr>
-    <tr>
-      <th>148</th>
-      <td>0.771936</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1.796518</td>
-      <td>1.157098</td>
-      <td>0.321120</td>
-      <td>-0.085274</td>
-      <td>0.231308</td>
-      <td>-0.018474</td>
-      <td>-0.403751</td>
-      <td>-0.944548</td>
-    </tr>
-    <tr>
-      <th>149</th>
-      <td>-0.391787</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>-0.551260</td>
-      <td>-0.515875</td>
-      <td>0.321120</td>
-      <td>-0.085274</td>
-      <td>0.231308</td>
-      <td>0.819952</td>
-      <td>0.690755</td>
-      <td>-0.300538</td>
-    </tr>
-  </tbody>
-</table>
-<p>150 rows × 12 columns</p>
 </div>
 
 
@@ -667,7 +451,7 @@ plot_correlation(data['EORtot'], data['OS (mesi)'])
 
 
     
-![png](notebook_files/notebook_13_0.png)
+![png](notebook_files/notebook_11_0.png)
     
 
 
@@ -699,7 +483,7 @@ plt.show()
 
 
     
-![png](notebook_files/notebook_16_0.png)
+![png](notebook_files/notebook_14_0.png)
     
 
 
@@ -710,7 +494,7 @@ But we are not done yet. We can also invert the process and identify the most im
 
 ```python
 # #save dataframe 
-# data.to_csv('data_norm.csv', index=False)
+data.to_csv('data_norm.csv', index=False)
 ```
 
 
@@ -727,23 +511,23 @@ plt.scatter(mapper.embedding_[:, 0], mapper.embedding_[:, 1], c=labels, cmap='Pi
 
 
 
-    <matplotlib.collections.PathCollection at 0x1b41868fd48>
+    <matplotlib.collections.PathCollection at 0x1dd8f57eec8>
 
 
 
 
     
-![png](notebook_files/notebook_19_1.png)
+![png](notebook_files/notebook_17_1.png)
     
 
 
 
 ```python
 corners = np.array([
-    [2.1, 8.7],  
-    [6.5, 10.5], 
-    [4.2, 14.5],  
-    [6.8, 14.2],  
+    [7, 5.5],  
+    [14, 2.6], 
+    [8.65, 8.65],  
+    [11.5, 8.65],  
 ])
 
 test_pts = np.array([
@@ -788,7 +572,7 @@ for i in range(5):
 
 
     
-![png](notebook_files/notebook_22_0.png)
+![png](notebook_files/notebook_20_0.png)
     
 
 
@@ -919,13 +703,13 @@ model.train_model(train_loader, test_loader, epochs=600, lr=0.001, PLOT_INTERVAL
 # torch.save(model.state_dict(), 'model.pth')
 ```
 
-    Epoch: 599, Train Loss: 0.2640
-    Epoch: 599, Test Loss: 1.0197
+    Epoch: 599, Train Loss: 0.2457
+    Epoch: 599, Test Loss: 1.0275
     
 
 
     
-![png](notebook_files/notebook_33_1.png)
+![png](notebook_files/notebook_31_1.png)
     
 
 
@@ -938,5 +722,5 @@ Let's try a clustering algorithm. (To do...)
 ```python
 # kmeans clustering
 from sklearn.cluster import KMeans
-kmeans = KMeans(n_clusters=3, random_state=0).fit(data.iloc[:, :-1])
+kmeans = KMeans(n_clusters=3, random_state=0).fit(data.iloc[:, :-1]) # careful with the last column
 ```
