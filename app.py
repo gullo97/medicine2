@@ -6,6 +6,7 @@ import plotly.express as px
 from streamlit_plotly_events import plotly_events
 import numpy as np
 #%%
+st.title("Data Exploration")
 st.write('Each point on the graph represents a single patient. The color of the point represents the patient\'s survival time. Click on a point to calculate the patiet\'s data.')
 # get mean and std from the data
 data = pd.read_excel("data.xls")
