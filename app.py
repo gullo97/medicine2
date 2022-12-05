@@ -16,8 +16,8 @@ data = data.iloc[:, :-2]
 means = {col: data[col].mean() for col in data.columns}
 stds = {col: data[col].std() for col in data.columns}
 
-means['Sesso','MGMTmet','IDH1'] = 0
-stds['Sesso','MGMTmet','IDH1'] = 1
+# means['Sesso','MGMTmet','IDH1'] = 0
+# stds['Sesso','MGMTmet','IDH1'] = 1
 # st.write(means)
 #%%
 # st.write("Hello World!")
