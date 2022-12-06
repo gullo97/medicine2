@@ -456,7 +456,7 @@ plot_correlation(data['EORtot'], data['OS (mesi)'])
 
 
 Let's use dimensionality reduction to see if we can find some interesting patterns in the data. This condenses the numerical information of each patient into 2 dimensions so that we can plot it.
-We use the first 10 columns as input and the last 2 as color. Thus green means longer than average and red means shorter than average survival time.
+We use the first 10 columns as input so that the model has no info about the last 2 columns which we want to predict.
 
 
 ```python
@@ -464,7 +464,25 @@ We use the first 10 columns as input and the last 2 as color. Thus green means l
 import umap
 reducer = umap.UMAP(random_state=42)
 embedding = reducer.fit_transform(data.iloc[:, :-2])
+#plot embedding
+plt.figure(figsize=(10,10))
+plt.scatter(embedding[:, 0], embedding[:, 1], marker = 'x')
 ```
+
+
+
+
+    <matplotlib.collections.PathCollection at 0x15420487ac8>
+
+
+
+
+    
+![png](notebook_files/notebook_13_1.png)
+    
+
+
+We can then use the last 2 columns as labels and plot the results to see if we can find any patterns.
 
 
 ```python
@@ -483,7 +501,7 @@ plt.show()
 
 
     
-![png](notebook_files/notebook_14_0.png)
+![png](notebook_files/notebook_15_0.png)
     
 
 
@@ -511,13 +529,13 @@ plt.scatter(mapper.embedding_[:, 0], mapper.embedding_[:, 1], c=labels, cmap='Pi
 
 
 
-    <matplotlib.collections.PathCollection at 0x1dd8f57eec8>
+    <matplotlib.collections.PathCollection at 0x154200d8f08>
 
 
 
 
     
-![png](notebook_files/notebook_17_1.png)
+![png](notebook_files/notebook_18_1.png)
     
 
 
@@ -572,7 +590,7 @@ for i in range(5):
 
 
     
-![png](notebook_files/notebook_20_0.png)
+![png](notebook_files/notebook_21_0.png)
     
 
 
@@ -703,13 +721,13 @@ model.train_model(train_loader, test_loader, epochs=600, lr=0.001, PLOT_INTERVAL
 # torch.save(model.state_dict(), 'model.pth')
 ```
 
-    Epoch: 599, Train Loss: 0.2457
-    Epoch: 599, Test Loss: 1.0275
+    Epoch: 599, Train Loss: 0.2592
+    Epoch: 599, Test Loss: 1.1609
     
 
 
     
-![png](notebook_files/notebook_31_1.png)
+![png](notebook_files/notebook_32_1.png)
     
 
 
