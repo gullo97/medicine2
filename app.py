@@ -11,7 +11,7 @@ st.write('Each point on the graph represents a single patient. The color of the 
 
 ################################################################################
 # get mean and std from the data to reverse the normalization if needed
-data = pd.read_excel("data.xls")
+data = pd.read_excel("data_eng.xlsx")
 #drop unnamed columns
 data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
 #drop last 2 columns
@@ -25,7 +25,7 @@ stds = {col: data[col].std() for col in data.columns}
 #%% read csv
 data_norm = pd.read_csv("data_norm.csv")
 #%%
-option  = st.selectbox('Select one :', ('OS (mesi)', 'PFS (mesi)'))
+option  = st.selectbox('Select one :', ('OS (months)', 'PFS (months)'))
 # labels = data_norm.iloc[:, -2]
 labels = data_norm[option]
 mapper = umap.UMAP(random_state=42).fit(data_norm.iloc[:, :-2])
