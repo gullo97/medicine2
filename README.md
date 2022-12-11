@@ -14,7 +14,7 @@ Let's take a look at the data.
 
 ```python
 # read data from xlsx file
-data = pd.read_excel('data.xlsx')
+data = pd.read_excel('data_eng.xlsx')
 data.head()
 ```
 
@@ -39,8 +39,8 @@ data.head()
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>Eta</th>
-      <th>Sesso</th>
+      <th>Age</th>
+      <th>Sex</th>
       <th>MGMTmet</th>
       <th>IDH1</th>
       <th>Unnamed: 4</th>
@@ -48,13 +48,13 @@ data.head()
       <th>Vol FLAIR</th>
       <th>Unnamed: 7</th>
       <th>RT</th>
-      <th>TMz cicli</th>
+      <th>TMz cycles</th>
       <th>Unnamed: 10</th>
-      <th>EORMdC (percentuale)</th>
-      <th>EORtot</th>
+      <th>EORMdC (%)</th>
+      <th>EORtot (%)</th>
       <th>Unnamed: 13</th>
-      <th>OS (mesi)</th>
-      <th>PFS (mesi)</th>
+      <th>OS (months)</th>
+      <th>PFS (months)</th>
     </tr>
   </thead>
   <tbody>
@@ -189,18 +189,18 @@ data.head()
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>Eta</th>
-      <th>Sesso</th>
+      <th>Age</th>
+      <th>Sex</th>
       <th>MGMTmet</th>
       <th>IDH1</th>
       <th>VolMdCpre</th>
       <th>Vol FLAIR</th>
       <th>RT</th>
-      <th>TMz cicli</th>
-      <th>EORMdC (percentuale)</th>
-      <th>EORtot</th>
-      <th>OS (mesi)</th>
-      <th>PFS (mesi)</th>
+      <th>TMz cycles</th>
+      <th>EORMdC (%)</th>
+      <th>EORtot (%)</th>
+      <th>OS (months)</th>
+      <th>PFS (months)</th>
     </tr>
   </thead>
   <tbody>
@@ -291,9 +291,21 @@ We now use seaborn to plot the corrrelation matrix.
 ```python
 # plot correlation matrix
 
+# corr = data.corr()
+# plt.figure(figsize=(20,20))
+# sns.heatmap(corr, annot=True, fmt=".2f", center=0, cmap='PiYG')
+# plt.yticks(rotation=0)
+# plt.xticks(rotation=45)
+# plt.savefig('corr_full.png')
+# plt.show()
+
+# #plot last 2 rows of correlation matrix
 corr = data.corr()
-plt.figure(figsize=(20,20))
-sns.heatmap(corr, annot=True, fmt=".2f", center=0, cmap='PiYG')
+plt.figure(figsize=(24,4))
+sns.heatmap(corr.iloc[-2:,:], annot=True, fmt=".2f", center=0, cmap='PiYG')
+plt.yticks(rotation=0)
+plt.xticks(rotation=0)
+plt.savefig('corr_vers2.png')
 plt.show()
 ```
 
@@ -337,18 +349,18 @@ data.head()
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>Eta</th>
-      <th>Sesso</th>
+      <th>Age</th>
+      <th>Sex</th>
       <th>MGMTmet</th>
       <th>IDH1</th>
       <th>VolMdCpre</th>
       <th>Vol FLAIR</th>
       <th>RT</th>
-      <th>TMz cicli</th>
-      <th>EORMdC (percentuale)</th>
-      <th>EORtot</th>
-      <th>OS (mesi)</th>
-      <th>PFS (mesi)</th>
+      <th>TMz cycles</th>
+      <th>EORMdC (%)</th>
+      <th>EORtot (%)</th>
+      <th>OS (months)</th>
+      <th>PFS (months)</th>
     </tr>
   </thead>
   <tbody>
@@ -446,7 +458,7 @@ def plot_correlation(column_1, column_2):
     
 
 # plot_correlation(data[data.columns[-4]], data['OS (mesi)'])
-plot_correlation(data['EORtot'], data['OS (mesi)'])
+plot_correlation(data['EORtot (%)'], data['OS (months)'])
 ```
 
 
@@ -472,7 +484,7 @@ plt.scatter(embedding[:, 0], embedding[:, 1], marker = 'x')
 
 
 
-    <matplotlib.collections.PathCollection at 0x15420487ac8>
+    <matplotlib.collections.PathCollection at 0x1e9d187ae08>
 
 
 
@@ -496,6 +508,7 @@ plt.subplot(1,2,2)
 plt.scatter(embedding[:, 0], embedding[:, 1], c=data.iloc[:, -1], cmap='PiYG', label=data.columns[-1])
 plt.colorbar()
 plt.legend()
+plt.savefig('umap_embedding.png')
 plt.show()
 ```
 
@@ -512,7 +525,7 @@ But we are not done yet. We can also invert the process and identify the most im
 
 ```python
 # #save dataframe 
-data.to_csv('data_norm.csv', index=False)
+# data.to_csv('data_norm.csv', index=False)
 ```
 
 
@@ -529,7 +542,7 @@ plt.scatter(mapper.embedding_[:, 0], mapper.embedding_[:, 1], c=labels, cmap='Pi
 
 
 
-    <matplotlib.collections.PathCollection at 0x154200d8f08>
+    <matplotlib.collections.PathCollection at 0x1e9d1a43448>
 
 
 
@@ -554,6 +567,8 @@ test_pts = np.array([
     for y in np.linspace(0, 1, 5)
     for x in np.linspace(0, 1, 5)
 ])
+
+
 ```
 
 
@@ -586,6 +601,7 @@ for i in range(5):
     for j in range(5):
         digit_axes[i, j].bar(range(len(inv_transformed_points[i*5 + j])), inv_transformed_points[i*5 + j])
         digit_axes[i, j].set(xticks=[], yticks=[])
+plt.savefig('umap_embedding_reversed.png')
 ```
 
 
@@ -594,7 +610,93 @@ for i in range(5):
     
 
 
+Let's plot a single point transformed back to the original space.
+
+
+```python
+test_pts = np.array([7.1,5.6]).reshape(1, -1)
+inv_transformed_points = mapper.inverse_transform(test_pts)
+#plot embedding and inverse transformed points
+plt.figure(figsize=(16,8))
+plt.subplot(1,2,1)
+plt.scatter(mapper.embedding_[:, 0], mapper.embedding_[:, 1], c=labels, cmap='PiYG')
+plt.scatter(test_pts[:, 0], test_pts[:, 1], c='red', marker='x', s=400)
+plt.xlabel('UMAP 1')
+plt.ylabel('UMAP 2')
+plt.xticks([])
+plt.yticks([])
+plt.subplot(1,2,2)
+plt.bar(range(len(inv_transformed_points[0])), inv_transformed_points[0])
+plt.xticks(range(len(inv_transformed_points[0])), data.columns[:-2], rotation=35)
+plt.savefig('umap_embedding_reversed_1.png')
+plt.show()
+
+```
+
+
+    
+![png](notebook_files/notebook_23_0.png)
+    
+
+
 To play around with this, you can use the app.py file in this repository. It is a simple streamlit app that allows to click on this 2D space and get the original features of the patient.
+
+Plotting lines can show us how the features change with the survival time.
+
+
+```python
+def line_centered_at_point(point, slope, length=1, n_samples=3):
+    """Return a line centered at a point with a given slope and length."""
+    xs = np.linspace(point[0] - length/2, point[0] + length/2, n_samples)
+    if slope == 0:
+        ys = np.ones(n_samples) * point[1]
+    else:
+        ys = point[1] + (xs - point[0]) * slope
+    return np.array([xs, ys]).T
+
+test_pts = np.array([11,5.5])
+test_pts = line_centered_at_point(test_pts, -1, length=5, n_samples=30)
+inv_transformed_points = mapper.inverse_transform(test_pts)
+
+#plot embedding and inverse transformed points
+plt.figure(figsize=(18,8))
+plt.subplot(1,2,1)
+plt.scatter(mapper.embedding_[:, 0], mapper.embedding_[:, 1], c=labels, cmap='PiYG')
+plt.scatter(test_pts[:, 0], test_pts[:, 1], c='red', marker='x', s=20)
+plt.xlabel('UMAP 1')
+plt.ylabel('UMAP 2')
+plt.xticks([])
+plt.yticks([])
+
+# colors = ['r', 'g', 'b', 'y', 'c', 'm', 'k']
+# ax2 = plt.subplot(1,2,2, projection='3d')
+# for i, point in enumerate(inv_transformed_points):
+#     ax2.bar(range(len(point)), point, zs=i, zdir='y', color=colors[i%len(colors)], alpha=0.8)
+# plt.xticks(range(len(inv_transformed_points[0])), data.columns[:-2], rotation=35)
+
+ax2 = plt.subplot(1,2,2)
+for i in range(len(inv_transformed_points[0])):
+    ax2.plot(inv_transformed_points[:, i], label=data.columns[i])
+ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+plt.xticks([])
+plt.xlabel('<----- Top-Left to Bottom-Right ----->')
+
+
+
+```
+
+
+
+
+    Text(0.5, 0, '<----- Top-Left to Bottom-Right ----->')
+
+
+
+
+    
+![png](notebook_files/notebook_26_1.png)
+    
+
 
 Let's now create a neural network model to try and fit the data.
 
@@ -721,13 +823,13 @@ model.train_model(train_loader, test_loader, epochs=600, lr=0.001, PLOT_INTERVAL
 # torch.save(model.state_dict(), 'model.pth')
 ```
 
-    Epoch: 599, Train Loss: 0.2592
-    Epoch: 599, Test Loss: 1.1609
+    Epoch: 599, Train Loss: 0.3257
+    Epoch: 599, Test Loss: 0.8952
     
 
 
     
-![png](notebook_files/notebook_32_1.png)
+![png](notebook_files/notebook_36_1.png)
     
 
 
